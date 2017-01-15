@@ -89,7 +89,7 @@ class BV4WP_Settings{
 		/* Create settings section */
 		add_settings_section(
 			$section_id        = 'bv4wp_section_api',
-			$section_title     = __( 'BriteVerify API', 'briteverify-for-wp' ),
+			$section_title     = false,
 			$callback_function = array( $this, 'settings_section_api' ),
 			$settings_slug     = $this->settings_slug
 		);
@@ -123,10 +123,10 @@ class BV4WP_Settings{
 	public function settings_field_api_key(){
 		?>
 		<p>
-			<input id="bv4wp_api_key" type="text" name="bv4wp_api_key" class="widefat" value="<?php echo sanitize_text_field( strip_tags( trim( get_option( $this->option_name ) ) ) ); ?>">
+			<input id="bv4wp_api_key" type="text" name="bv4wp_api_key" class="regular-text" value="<?php echo sanitize_text_field( strip_tags( trim( get_option( $this->option_name ) ) ) ); ?>">
 		</p>
 		<p class="description">
-			<?php _e( 'Your BriteVerify API Key', 'fx-base' ); ?>
+			<?php _e( 'API Key to connect to BriteVerify Real-Time API.', 'fx-base' ); ?>
 		</p>
 		<?php
 	}
