@@ -103,6 +103,14 @@ class BV4WP_Settings{
 			$section_id        = 'bv4wp_section_api'
 		);
 
+		/* Create settings section */
+		add_settings_section(
+			$section_id        = 'bv4wp_section_plugins',
+			$section_title     = __( 'Supported Plugins', 'briteverify-for-wp' ),
+			$callback_function = '__return_false',
+			$settings_slug     = $this->settings_slug
+		);
+
 	}
 
 	/**
@@ -112,7 +120,7 @@ class BV4WP_Settings{
 	 */
 	public function settings_section_api(){
 		?>
-		<p><?php _e( 'BriteVerify is an email verification service to make sure all email field submission are  valid email addresses. <a href="http://www.briteverify.com/" target="_blank">Read more about BriteVerify</a>.', 'briteverify-for-wp' ); ?></p>
+		<p><?php _e( 'BriteVerify is an email verification service to make sure each email field submission is  valid email address. <a href="http://www.briteverify.com/" target="_blank">Read more about BriteVerify</a>.', 'briteverify-for-wp' ); ?></p>
 		<?php
 	}
 

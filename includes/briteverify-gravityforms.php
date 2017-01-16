@@ -1,8 +1,101 @@
 <?php
+if ( ! defined( 'WPINC' ) ) { die; }
+BV4WP_GravityForms_Setup::get_instance();
+
 /**
- * Utility Functions
+ * Gravity Forms
  * @since 1.0.0
 **/
+class BV4WP_GravityForms_Setup{
+
+	/**
+	 * Returns the instance.
+	 */
+	public static function get_instance(){
+		static $instance = null;
+		if ( is_null( $instance ) ) $instance = new self;
+		return $instance;
+	}
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+
+		/* Add Note in Plugin Settings */
+		add_action( 'admin_init', array( $this, 'settings_note' ) );
+
+		/* On Gravity Forms Load */
+		add_action( 'gform_loaded', array( $this, 'init' ) );
+	}
+
+	/**
+	 * Settings Note
+	 * @since 1.0.0
+	 */
+	public function settings_note(){
+		add_settings_field(
+			$field_id          = 'bv4wp_field_gravityforms_note',
+			$field_title       = __( 'Gravity Forms', 'briteverify-for-wp' ),
+			$callback_function = array( $this, 'settings_note_callback' ),
+			$settings_slug     = 'bv4wp',
+			$section_id        = 'bv4wp_section_plugins'
+		);
+	}
+
+	/**
+	 * Settings Note Callback
+	 * @since 1.0.0
+	 */
+	public function settings_note_callback(){
+
+		/* GF Plugin is active */
+		if ( class_exists( 'GFCommon' ) ) {
+			echo wpautop( __( 'Lorem ipsum1', 'briteverify-for-wp' ) );
+		}
+		/* Not active */
+		else{
+			echo wpautop( __( 'Lorem ipsum2', 'briteverify-for-wp' ) );
+		}
+	}
+
+	/**
+	 * Init: Gravity Forms Load
+	 * @since 1.0.0
+	 */
+	public function init(){
+		/* Check if method exists */
+		if ( ! method_exists( 'GFForms', 'include_addon_framework' ) ) {
+			return;
+		}
+
+		/* Load Class */
+		require_once( BV4WP_PATH . 'includes/gravityforms/gravityforms.php' );
+
+		/* Register Add-On */
+		GFAddOn::register( 'BV4WP_GravityForms' );
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
