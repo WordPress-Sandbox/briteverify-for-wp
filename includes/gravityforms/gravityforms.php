@@ -44,8 +44,6 @@ class BV4WP_GravityForms extends GFAddOn{
 	 * Handles hooks and loading of language files.
 	 */
 	public function init() {
-		//$option = get_option( 'gravityformsaddon_briteverify-for-wp_settings' );
-		//ccdd($option);
 		parent::init();
 	}
 
@@ -58,21 +56,34 @@ class BV4WP_GravityForms extends GFAddOn{
 	 * @return array
 	 */
 	public function plugin_settings_fields() {
-		return array(
+		$fields = array(
 			array(
-				'title'  => esc_html__( 'Simple Add-On Settings', 'simpleaddon' ),
+				'title'  => false,
 				'fields' => array(
 					array(
-						'name'              => 'mytextbox',
-						'tooltip'           => esc_html__( 'This is the tooltip', 'simpleaddon' ),
-						'label'             => esc_html__( 'This is the label', 'simpleaddon' ),
-						'type'              => 'text',
-						'class'             => 'small',
-						'feedback_callback' => array( $this, 'is_valid_setting' ),
+						'name'                 => 'enable',
+						'tooltip'              => esc_html__( 'This is the default option. You can still disable/enable each feature in email field using advanced field settings.', 'briteverify-for-wp' ),
+						'label'                => esc_html__( 'Default options', 'briteverify-for-wp' ),
+						'type'                 => 'checkbox',
+						'class'                => 'small',
+						'choices'              => array(
+							'enable'           => array(
+								'id'    => 'bv4wp-gf-enable',
+								'name'  => 'enable',
+								'label' => __( 'Enable in all email fields.', 'briteverify-for-wp' ),
+							),
+							'allow_disposable' => array(
+								'id'    => 'bv4wp-gf-allow_disposable',
+								'name'  => 'allow_disposable',
+								'label' => __( 'Allow disposable email.', 'briteverify-for-wp' ),
+							),
+						),
+						'feedback_callback' => array( $this, 'validate_bool' ),
 					)
 				)
 			)
 		);
+		return $fields;
 	}
 
 
@@ -84,8 +95,8 @@ class BV4WP_GravityForms extends GFAddOn{
 	 * @param string $value The setting value.
 	 * @return bool
 	 */
-	public function is_valid_setting( $value ) {
-		return $value;
+	public function validate_bool( $value ) {
+		return $value ? true : false;
 	}
 
 }

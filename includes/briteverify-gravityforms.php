@@ -51,11 +51,15 @@ class BV4WP_GravityForms_Setup{
 
 		/* GF Plugin is active */
 		if ( class_exists( 'GFCommon' ) ) {
-			echo wpautop( __( 'Lorem ipsum1', 'briteverify-for-wp' ) );
+			$url = add_query_arg( array(
+				'page' => 'gf_settings',
+				'subview' => 'briteverify-for-wp',
+			), admin_url( 'admin.php' ) );
+			echo wpautop( '<a href="' . esc_url( $url ) . '">' . __( 'View Settings', 'briteverify-for-wp' ) . '</a>' );
 		}
 		/* Not active */
 		else{
-			echo wpautop( __( 'Lorem ipsum2', 'briteverify-for-wp' ) );
+			echo wpautop( __( 'Gravity Forms is a full featured contact form plugin that features a drag and drop interface.', 'briteverify-for-wp' ) . ' <a href="http://www.gravityforms.com/" target="_blank">' . __( 'Learn more', 'briteverify-for-wp' ) . '.</a>' );
 		}
 	}
 
@@ -68,6 +72,9 @@ class BV4WP_GravityForms_Setup{
 		if ( ! method_exists( 'GFForms', 'include_addon_framework' ) ) {
 			return;
 		}
+
+		/* Load Functions */
+		require_once( BV4WP_PATH . 'includes/gravityforms/functions.php' );
 
 		/* Load Class */
 		require_once( BV4WP_PATH . 'includes/gravityforms/gravityforms.php' );
