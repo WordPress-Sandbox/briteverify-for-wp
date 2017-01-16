@@ -15,20 +15,20 @@ function bv4wp_api_key(){
 
 /**
  * Validate Email
- * return value: valid, invalid, error
+ * return value: valid, invalid, disposable, error
  * @return string
  * @since 1.0.0
  */
-function bv4wp_validate_email( $email, $allow_disposable = false ){
+function bv4wp_validate_email( $email ){
 
 	/* Bail if no API key */
 	$api_key = bv4wp_api_key();
-	if( !$api_key ){
+	if( ! $api_key ){
 		return 'error';
 	}
 
 	/* Bail if no email/email is not valid */
-	if( !$email || ! is_email( $email ) ){
+	if( ! $email || ! is_email( $email ) ){
 		return 'invalid';
 	}
 
@@ -50,13 +50,13 @@ function bv4wp_validate_email( $email, $allow_disposable = false ){
 	$data = json_decode( trim( wp_remote_retrieve_body( $raw_response ) ), true );
 
 	/* Status */
+	return $data['status'];
 	if( isset( $data['status'] ) ){
 		if( 'valid' == $data['status'] ){
-			$out = 'valid';
-			if( ! $allow_disposable && isset( $data['disposable'] ) && true == $data['disposable'] ){
-				$out = 'invalid';
+			if( isset( $data['disposable'] ) && true == $data['disposable'] ){
+				return 'disposable';
 			}
-			return $out;
+			return 'valid';
 		}
 		else{
 			return 'invalid';

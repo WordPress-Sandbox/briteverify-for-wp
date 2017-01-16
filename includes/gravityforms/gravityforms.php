@@ -51,11 +51,20 @@ class BV4WP_GravityForms extends GFAddOn{
 		/* Editor JS */
 		add_action( 'gform_editor_js', array( $this, 'bv4wp_gf_field_editor_js' ) );
 
-		/* Validation */
-		add_filter( 'gform_field_validation', array( $this, 'bv4wp_gf_email_validation' ), 10, 4 );
+		/* Check API Key */
+		$api_key = bv4wp_api_key();
+		if( $api_key ){
 
-		/* Scripts */
-		add_action( 'gform_enqueue_scripts', array( $this, 'bv4wp_gf_enqueue_scripts' ), 10, 2 );
+			/* Validation */
+			add_filter( 'gform_field_validation', array( $this, 'bv4wp_gf_email_validation' ), 10, 4 );
+
+			/* Scripts */
+			add_action( 'gform_enqueue_scripts', array( $this, 'bv4wp_gf_enqueue_scripts' ), 10, 2 );
+
+			/* Ajax Validation */
+			add_action( 'wp_ajax_bv4wp_gf_validate_email', array( $this, 'bv4wp_gf_ajax_validate_email' ) );
+			add_action( 'wp_ajax_nopriv_bv4wp_gf_validate_email', array( $this, 'bv4wp_gf_ajax_validate_email' ) );
+		}
 
 		parent::init();
 	}
@@ -271,7 +280,6 @@ class BV4WP_GravityForms extends GFAddOn{
 					$allow_dp = bv4wp_gf_option_allow_disposable();
 					if( 'yes' == $field['bv4wp_gf_allow_disposable'] ){
 						$allow_dp = true;
-						ccdd($field['bv4wp_gf_allow_disposable']);
 					}
 					elseif( 'no' == $field['bv4wp_gf_allow_disposable'] ){
 						$allow_dp = false;
@@ -287,13 +295,13 @@ class BV4WP_GravityForms extends GFAddOn{
 					}
 
 					/* Input ID */
-					$input_id = 'input_' . $field['formId'] . '_' . $field['id'];
+					$input_id = esc_attr( 'input_' . $field['formId'] . '_' . $field['id'] );
 
 					/* Add data */
 					if( !isset( $bv4wp_gf_email_fields[$input_id] ) ){
 						$bv4wp_gf_email_fields[$input_id] = array(
-							'bv4wp_gf_enable'           => $validate,
-							'bv4wp_gf_allow_disposable' => $allow_dp,
+							'enable'           => esc_attr( $validate ),
+							'allow_disposable' => esc_attr( $allow_dp ),
 						);
 					}
 				}
@@ -303,8 +311,55 @@ class BV4WP_GravityForms extends GFAddOn{
 		if( ! isset( $bv4gf_localize_load ) && ! $bv4gf_localize_load ){
 			$bv4gf_localize_load = true;
 			wp_localize_script( 'bv4wp-gf', 'bv4wp_gf_emails', $bv4wp_gf_email_fields );
+			wp_localize_script( 'bv4wp-gf', 'bv4wp_gf_ajax', array( 'url' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'bv4wp_gf_ajax' ) ) );
 		}
 	}
+
+
+	/* AJAX CALLBACK
+	------------------------------------------ */
+
+	/**
+	 * Validate Emails
+	 * @since 1.0.0
+	 */
+	public function bv4wp_gf_ajax_validate_email(){
+
+		/* Strip Slash */
+		$request = stripslashes_deep( $_POST );
+
+		/* Check Ajax Nonce */
+		check_ajax_referer( 'bv4wp_gf_ajax', 'nonce' );
+
+		/* Vars */
+		$email = isset( $request['email'] ) ? $request['email'] : '';
+		$allow_disposable = isset( $request['allow_disposable'] ) && $request['allow_disposable'] ? true : false;
+
+		/* Validate email using BriteVerify */
+		$valid_status = bv4wp_validate_email( $email );
+
+		/* Return result messages based on status */
+		$result = array(
+			'is_valid' => true,
+			'message'  => '',
+		);
+		if( 'error' == $valid_status ){
+			$result['is_valid'] = false;
+			$result['message'] = __( 'Unable to validate email. Email validation request error. Please try again or contact administrator.', 'briteverify-for-wp' );
+			return $result;
+		}
+		elseif( 'invalid' == $valid_status ){
+			$result['is_valid'] = false;
+			$result['message'] = __( 'Email is incorrect.', 'briteverify-for-wp' );
+		}
+		elseif( 'disposable' == $valid_status && ! $allow_dp ){
+			$result['is_valid'] = false;
+			$result['message'] = __( 'Please use your real email address. You are not allowed to use disposable email in this form.', 'briteverify-for-wp' );
+		}
+		echo json_encode( $result );
+		wp_die();
+	}
+
 
 	/* HELPERS FUNCTIONS
 	------------------------------------------ */
@@ -341,51 +396,28 @@ class BV4WP_GravityForms extends GFAddOn{
 			return $result;
 		}
 
-		/* API URL */
-		$url = add_query_arg( array(
-			'address' => urlencode( trim( $value ) ),
-			'apikey'  => urlencode( trim( $api_key ) ),
-		), 'https://bpi.briteverify.com/emails.json' );
+		/* Validate email using BriteVerify */
+		$valid_status = bv4wp_validate_email( $value );
 
-		/* Request Check */
-		$raw_response = wp_remote_get( esc_url_raw( $url ) );
-
-		/* Request to BriteVerify fail */
-		if ( is_wp_error( $raw_response ) || 200 != wp_remote_retrieve_response_code( $raw_response ) ) {
+		/* Return result messages based on status */
+		if( 'error' == $valid_status ){
 			$result['is_valid'] = false;
 			$result['message'] = __( 'Unable to validate email. Email validation request error. Please try again or contact administrator.', 'briteverify-for-wp' );
 			return $result;
 		}
-
-		/* JSON Data Result */
-		$data = json_decode( trim( wp_remote_retrieve_body( $raw_response ) ), true );
-
-		/* Check status */
-		if( isset( $data['status'] ) ){
-
-			/* Email is valid */
-			if( 'valid' == $data['status'] ){
-				$result['is_valid'] = true;
-				$result['message'] = '';
-
-				/* If do not allow disposable and email is disposable, return error */
-				if( ! $allow_dp && isset( $data['disposable'] ) && true == $data['disposable'] ){
-					$result['is_valid'] = false;
-					$result['message'] = __( 'Please use your real email address. You are not allowed to use disposable email in this form.', 'briteverify-for-wp' );
-				}
-			}
-			/* Email not valid */
-			else{
-				$result['is_valid'] = false;
-				$result['message'] = __( 'Email is incorrect.', 'briteverify-for-wp' );
-			}
-		}
-
-		/* No status data found (invalid return value) */
-		else{
+		elseif( 'invalid' == $valid_status ){
 			$result['is_valid'] = false;
-			$result['message'] = __( 'Unable to validate email. Invalid validation API results. Please try again or contact administrator.', 'briteverify-for-wp' );
+			$result['message'] = __( 'Email is incorrect.', 'briteverify-for-wp' );
 		}
+		elseif( 'disposable' == $valid_status && ! $allow_dp ){
+			$result['is_valid'] = false;
+			$result['message'] = __( 'Please use your real email address. You are not allowed to use disposable email in this form.', 'briteverify-for-wp' );
+		}
+		else{
+			$result['is_valid'] = true;
+			$result['message'] = '';
+		}
+
 		return $result;
 	}
 

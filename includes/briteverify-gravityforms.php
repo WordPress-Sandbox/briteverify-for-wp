@@ -85,24 +85,3 @@ class BV4WP_GravityForms_Setup{
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
