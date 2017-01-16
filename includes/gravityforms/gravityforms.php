@@ -51,6 +51,12 @@ class BV4WP_GravityForms extends GFAddOn{
 		/* Editor JS */
 		add_action( 'gform_editor_js', array( $this, 'bv4wp_gf_field_editor_js' ) );
 
+		/* Validation */
+		add_filter( 'gform_field_validation', array( $this, 'bv4wp_gf_email_validation' ), 10, 4 );
+
+		/* Scripts */
+		add_action( 'gform_enqueue_scripts', array( $this, 'bv4wp_gf_enqueue_scripts' ), 10, 2 );
+
 		parent::init();
 	}
 
@@ -155,6 +161,50 @@ class BV4WP_GravityForms extends GFAddOn{
 	}
 
 
+	/**
+	 * Email Validation
+	 * @since 1.0.0
+	 */
+	public function bv4wp_gf_email_validation( $result, $value, $form, $field ){
+
+		/* Bail if not email field. */
+		if( 'email' != $field->type ){
+			return $result;
+		}
+
+		/* Bail if no API Key */
+		$api_key = bv4wp_api_key();
+		if( ! $api_key ){
+			return $result;
+		}
+
+		/* Allow Disposable Email Option */
+		$allow_dp = bv4wp_gf_option_allow_disposable();
+		if( 'yes' == $field->bv4wp_gf_allow_disposable ){
+			$allow_dp = true;
+		}
+		elseif( 'no' == $field->bv4wp_gf_allow_disposable ){
+			$allow_dp = false;
+		}
+
+		/* Check if validation enabled */
+		$validate = bv4wp_gf_option_enable();
+		if( 'yes' == $field->bv4wp_gf_enable ){
+			$validate = true;
+		}
+		elseif( 'no' == $field->bv4wp_gf_enable ){
+			$validate = false;
+		}
+
+		/* Validate */
+		if( $validate ){
+			return $this->validate_email( $result, $value, $allow_dp );
+		}
+
+		return $result;
+	}
+
+
 	/* ADMIN FUNCTIONS
 	------------------------------------------ */
 
@@ -194,6 +244,68 @@ class BV4WP_GravityForms extends GFAddOn{
 	}
 
 
+	/* FRONT END
+	------------------------------------------ */
+
+	/**
+	 * Return the scripts which should be enqueued.
+	 * @return array
+	 */
+	public function bv4wp_gf_enqueue_scripts( $form = '', $is_ajax = false ) {
+
+		/* Global var to store all input fields */
+		global $bv4wp_gf_email_fields, $bv4gf_localize_load;
+		if( !isset( $bv4wp_gf_email_fields ) ){
+			$bv4wp_gf_email_fields = array();
+		}
+
+		/* Load Scripts */
+		wp_enqueue_script( 'bv4wp-gf', BV4WP_URI . 'assets/gravityforms.js', array( 'jquery' ), BV4WP_VERSION, true );
+
+		/* Add input */
+		if( isset( $form['fields'] ) && $form['fields'] && is_array( $form['fields'] ) ){
+			foreach( $form['fields'] as $field ){
+				if( 'email' == $field['type'] ){
+
+					/* Allow Disposable Email Option */
+					$allow_dp = bv4wp_gf_option_allow_disposable();
+					if( 'yes' == $field['bv4wp_gf_allow_disposable'] ){
+						$allow_dp = true;
+						ccdd($field['bv4wp_gf_allow_disposable']);
+					}
+					elseif( 'no' == $field['bv4wp_gf_allow_disposable'] ){
+						$allow_dp = false;
+					}
+
+					/* Check if validation enabled */
+					$validate = bv4wp_gf_option_enable();
+					if( 'yes' == $field['bv4wp_gf_enable'] ){
+						$validate = true;
+					}
+					elseif( 'no' == $field['bv4wp_gf_enable'] ){
+						$validate = false;
+					}
+
+					/* Input ID */
+					$input_id = 'input_' . $field['formId'] . '_' . $field['id'];
+
+					/* Add data */
+					if( !isset( $bv4wp_gf_email_fields[$input_id] ) ){
+						$bv4wp_gf_email_fields[$input_id] = array(
+							'bv4wp_gf_enable'           => $validate,
+							'bv4wp_gf_allow_disposable' => $allow_dp,
+						);
+					}
+				}
+			}
+		}
+		/* Do not load twice (?) */
+		if( ! isset( $bv4gf_localize_load ) && ! $bv4gf_localize_load ){
+			$bv4gf_localize_load = true;
+			wp_localize_script( 'bv4wp-gf', 'bv4wp_gf_emails', $bv4wp_gf_email_fields );
+		}
+	}
+
 	/* HELPERS FUNCTIONS
 	------------------------------------------ */
 
@@ -204,6 +316,77 @@ class BV4WP_GravityForms extends GFAddOn{
 	 */
 	public function validate_bool( $value ) {
 		return $value ? true : false;
+	}
+
+	/**
+	 * Validate Email
+	 * Only use this function after making sure all requirements complete.
+	 * @since 1.0.0
+	 */
+	public function validate_email( $result, $value, $allow_dp ){
+
+		/* Bail if no value */
+		if( ! $value ){
+			return $result;
+		}
+
+		/* Bail if no API Key */
+		$api_key = bv4wp_api_key();
+		if( ! $api_key ){
+			return $result;
+		}
+
+		/* Bail if wp is_email() check fail. */
+		if( ! is_email( $value ) ){
+			return $result;
+		}
+
+		/* API URL */
+		$url = add_query_arg( array(
+			'address' => urlencode( trim( $value ) ),
+			'apikey'  => urlencode( trim( $api_key ) ),
+		), 'https://bpi.briteverify.com/emails.json' );
+
+		/* Request Check */
+		$raw_response = wp_remote_get( esc_url_raw( $url ) );
+
+		/* Request to BriteVerify fail */
+		if ( is_wp_error( $raw_response ) || 200 != wp_remote_retrieve_response_code( $raw_response ) ) {
+			$result['is_valid'] = false;
+			$result['message'] = __( 'Unable to validate email. Email validation request error. Please try again or contact administrator.', 'briteverify-for-wp' );
+			return $result;
+		}
+
+		/* JSON Data Result */
+		$data = json_decode( trim( wp_remote_retrieve_body( $raw_response ) ), true );
+
+		/* Check status */
+		if( isset( $data['status'] ) ){
+
+			/* Email is valid */
+			if( 'valid' == $data['status'] ){
+				$result['is_valid'] = true;
+				$result['message'] = '';
+
+				/* If do not allow disposable and email is disposable, return error */
+				if( ! $allow_dp && isset( $data['disposable'] ) && true == $data['disposable'] ){
+					$result['is_valid'] = false;
+					$result['message'] = __( 'Please use your real email address. You are not allowed to use disposable email in this form.', 'briteverify-for-wp' );
+				}
+			}
+			/* Email not valid */
+			else{
+				$result['is_valid'] = false;
+				$result['message'] = __( 'Email is incorrect.', 'briteverify-for-wp' );
+			}
+		}
+
+		/* No status data found (invalid return value) */
+		else{
+			$result['is_valid'] = false;
+			$result['message'] = __( 'Unable to validate email. Invalid validation API results. Please try again or contact administrator.', 'briteverify-for-wp' );
+		}
+		return $result;
 	}
 
 }
