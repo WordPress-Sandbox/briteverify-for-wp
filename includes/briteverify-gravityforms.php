@@ -59,7 +59,7 @@ class BV4WP_GravityForms_Setup{
 		}
 		/* Not active */
 		else{
-			echo wpautop( __( 'Gravity Forms is a full featured contact form plugin that features a drag and drop interface.', 'briteverify-for-wp' ) . ' <a href="http://www.gravityforms.com/" target="_blank">' . __( 'Learn more', 'briteverify-for-wp' ) . '.</a>' );
+			echo wpautop( __( 'Easily create web forms and manage form entries within the WordPress admin.', 'briteverify-for-wp' ) . ' <a href="http://www.gravityforms.com/" target="_blank">' . __( 'Learn more', 'briteverify-for-wp' ) . '.</a>' );
 		}
 	}
 
