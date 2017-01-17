@@ -29,14 +29,3 @@ function bv4wp_gf_option_allow_disposable(){
 	return false;
 }
 
-
-
-
-
-
-
-
-
-
-
-

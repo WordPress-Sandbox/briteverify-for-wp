@@ -9,7 +9,9 @@
  * @since 1.0.0
  */
 function bv4wp_api_key(){
-	return sanitize_text_field( strip_tags( trim( get_option( 'bv4wp_api_key' ) ) ) );
+	$is_valid = get_option( 'bv4wp_api_key_is_valid' ) ? true : false;
+	$key = $is_valid ? sanitize_text_field( strip_tags( trim( get_option( 'bv4wp_api_key' ) ) ) ) : false;
+	return $key;
 }
 
 
