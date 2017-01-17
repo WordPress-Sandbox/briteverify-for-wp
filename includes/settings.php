@@ -34,6 +34,9 @@ class BV4WP_Settings{
 		/* Register Settings and Fields */
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 
+		/* Validate API Key */
+		add_action( 'update_option', array( $this, 'check_api_key' ), 10, 3 );
+
 		/* Settings Scripts */
 		add_action( 'admin_enqueue_scripts', array( $this, 'scripts' ) );
 	}
@@ -111,12 +114,16 @@ class BV4WP_Settings{
 			$settings_slug     = $this->settings_slug
 		);
 
+		/* Notice API Key Valid */
+		$api_key_valid = get_option( 'bv4wp_api_key_is_valid' ) ? true : false;
+		if( ! $api_key_valid ){
+			add_action( 'admin_notices', array( $this, 'api_key_notice' ) );
+		}
 	}
 
 	/**
 	 * Settings Section: API
 	 * @since 1.0.0
-	 * 
 	 */
 	public function settings_section_api(){
 		?>
@@ -139,7 +146,6 @@ class BV4WP_Settings{
 		<?php
 	}
 
-
 	/**
 	 * Sanitize Options
 	 * @since 1.0.0
@@ -148,6 +154,39 @@ class BV4WP_Settings{
 		return sanitize_text_field( strip_tags( trim( $data ) ) );
 	}
 
+	/**
+	 * Check API Key
+	 * @since 1.0.0
+	 */
+	public function check_api_key( $option, $old_value, $new_value ){
+		if( $new_value && $new_value !== $old_value ){
+			$email = get_option( 'admin_email' );
+			$api_key = sanitize_text_field( strip_tags( trim( $new_value ) ) );
+			$validate = bv4wp_validate_email( $email, $api_key );
+			if( 'error' == $validate ){
+				$is_valid = false;
+			}
+			else{
+				$is_valid = true;
+			}
+			update_option( 'bv4wp_api_key_is_valid', $is_valid );
+		}
+	}
+
+	/**
+	 * API Key Notice
+	 * @since 1.0.0
+	 */
+	public function api_key_notice(){
+		global $hook_suffix;
+		if ( $this->hook_suffix == $hook_suffix ){
+			?>
+			<div class="notice notice-error is-dismissible">
+				<p><?php _e( 'Your BriteVerify API Key is not valid.', 'briteverify-for-wp' ); ?></p>
+			</div>
+			<?php
+		}
+	}
 
 	/**
 	 * Settings Scripts

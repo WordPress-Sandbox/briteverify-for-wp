@@ -19,12 +19,14 @@ function bv4wp_api_key(){
  * @return string
  * @since 1.0.0
  */
-function bv4wp_validate_email( $email ){
+function bv4wp_validate_email( $email, $api_key = '' ){
 
 	/* Bail if no API key */
-	$api_key = bv4wp_api_key();
-	if( ! $api_key ){
-		return 'error';
+	if( '' == $api_key ){
+		$api_key = bv4wp_api_key();
+		if( ! $api_key ){
+			return 'error';
+		}
 	}
 
 	/* Bail if no email/email is not valid */
