@@ -22,17 +22,28 @@ class BV4WP_EDD_Setup{
 	 */
 	public function __construct() {
 
-		/* API Key */
-		$api_key = bv4wp_api_key();
-
 		/* Add Note in Plugin Settings */
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 
+		/* Vars */
+		$api_key = bv4wp_api_key();
+		$option = get_option( 'bv4wp_edd' );
+		$enable_register = isset( $option['enable_register'] ) && $option['enable_register'] ?  1 : 0;
+
 		/* Load if EDD active */
-		if ( class_exists( 'Easy_Digital_Downloads' ) && $api_key ) {
+		if ( class_exists( 'Easy_Digital_Downloads' ) && $api_key && $enable_register ) {
 
 			/* Validate register email */
 			add_action( 'edd_process_register_form', array( $this, 'validate_register_email' ) );
+
+			/* Scripts */
+			add_action( 'wp_enqueue_scripts', array( $this, 'scripts' ) );
+
+			/* Enqueue Scripts */
+			add_action( 'edd_register_form_fields_top', array( $this, 'load_scripts' ) );
+
+			/* AJAX Validation */
+			add_action( 'wp_ajax_nopriv_bv4wp_edd_validate_email', array( $this, 'ajax_validate_email' ) );
 		}
 	}
 
@@ -83,7 +94,7 @@ class BV4WP_EDD_Setup{
 		/* GF Plugin is active */
 		if ( class_exists( 'Easy_Digital_Downloads' ) ) {
 			$option = get_option( 'bv4wp_edd' );
-			$enable_register = isset( $option['enable_register'] ) && $option['enable_register'] ?  1 : 0
+			$enable_register = isset( $option['enable_register'] ) && $option['enable_register'] ?  1 : 0;
 			?>
 			<label>
 				<input name="bv4wp_edd[enable_register]" id="bv4wp_edd_enable" value="1" type="checkbox" <?php checked( $enable_register, 1 ); ?>>
@@ -114,6 +125,72 @@ class BV4WP_EDD_Setup{
 				edd_set_error( 'email_invalid', __( 'Please use your real email address. You are not allowed to use disposable email in this form.', 'briteverify-for-wp' ) );
 			}
 		}
+	}
+
+	/**
+	 * Register Scripts
+	 * @since 1.0.0
+	 */
+	public function scripts(){
+
+		/* Register Script */
+		wp_register_script( 'bv4wp-edd', BV4WP_URI . 'assets/edd.js', array( 'jquery' ), BV4WP_VERSION, true );
+
+		/* Ajax Datas */
+		wp_localize_script( 'bv4wp-edd', 'bv4wp_edd_ajax', array( 'url' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'bv4wp_edd_ajax' ) ) );
+	}
+
+	/**
+	 * Load Scripts
+	 * @since 1.0.0
+	 */
+	public function load_scripts(){
+		wp_enqueue_script( 'bv4wp-edd' );
+	}
+
+	/**
+	 * Validation Script
+	 * @since 1.0.0
+	 */
+	public function ajax_validate_email(){
+
+		/* Strip Slash */
+		$request = stripslashes_deep( $_POST );
+
+		/* Check Ajax Nonce */
+		check_ajax_referer( 'bv4wp_edd_ajax', 'nonce' );
+
+		/* Vars */
+		$email = isset( $request['email'] ) ? $request['email'] : '';
+
+		/* Validate email using BriteVerify */
+		$valid_status = bv4wp_validate_email( $email );
+
+		/* Return result messages based on status */
+		$result = array(
+			'is_valid' => true,
+			'message'  => '',
+		);
+		/* Not Email, Let EDD & browser process this data */
+		if( ! is_email( $email ) ){
+			$result['is_valid'] = true;
+			$result['message'] = '';
+		}
+		/* Validate using Briteverify */
+		elseif( 'error' == $valid_status ){
+			$result['is_valid'] = false;
+			$result['message'] = __( 'Unable to validate email. Email validation request error. Please try again or contact administrator.', 'briteverify-for-wp' );
+		}
+		elseif( 'invalid' == $valid_status ){
+			$result['is_valid'] = false;
+			$result['message'] = __( 'Email is incorrect.', 'briteverify-for-wp' );
+		}
+		elseif( 'disposable' == $valid_status ){
+			$result['is_valid'] = false;
+			$result['message'] = __( 'Please use your real email address. You are not allowed to use disposable email in this form.', 'briteverify-for-wp' );
+		}
+		echo json_encode( $result );
+		wp_die();
 	}
 
 }

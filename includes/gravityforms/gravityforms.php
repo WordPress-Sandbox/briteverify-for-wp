@@ -346,7 +346,6 @@ class BV4WP_GravityForms extends GFAddOn{
 		if( 'error' == $valid_status ){
 			$result['is_valid'] = false;
 			$result['message'] = __( 'Unable to validate email. Email validation request error. Please try again or contact administrator.', 'briteverify-for-wp' );
-			return $result;
 		}
 		elseif( 'invalid' == $valid_status ){
 			$result['is_valid'] = false;
@@ -403,7 +402,6 @@ class BV4WP_GravityForms extends GFAddOn{
 		if( 'error' == $valid_status ){
 			$result['is_valid'] = false;
 			$result['message'] = __( 'Unable to validate email. Email validation request error. Please try again or contact administrator.', 'briteverify-for-wp' );
-			return $result;
 		}
 		elseif( 'invalid' == $valid_status ){
 			$result['is_valid'] = false;
