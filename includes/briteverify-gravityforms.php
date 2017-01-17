@@ -1,12 +1,12 @@
 <?php
 if ( ! defined( 'WPINC' ) ) { die; }
-BV4WP_GravityForms_Setup::get_instance();
+BV4WP_GravityForms::get_instance();
 
 /**
  * Gravity Forms
  * @since 1.0.0
 **/
-class BV4WP_GravityForms_Setup{
+class BV4WP_GravityForms{
 
 	/**
 	 * Returns the instance.
@@ -68,7 +68,8 @@ class BV4WP_GravityForms_Setup{
 	 * @since 1.0.0
 	 */
 	public function init(){
-		/* Check if method exists */
+
+		/* Bail if GF not active */
 		if ( ! method_exists( 'GFForms', 'include_addon_framework' ) ) {
 			return;
 		}
@@ -80,7 +81,7 @@ class BV4WP_GravityForms_Setup{
 		require_once( BV4WP_PATH . 'includes/gravityforms/gravityforms.php' );
 
 		/* Register Add-On */
-		GFAddOn::register( 'BV4WP_GravityForms' );
+		GFAddOn::register( 'BV4WP_GravityForms_AddOn' );
 	}
 
 }

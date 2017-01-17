@@ -14,7 +14,7 @@ GFForms::include_addon_framework();
  * Extend GFAddOn Class
  * @since 1.0.0
  */
-class BV4WP_GravityForms extends GFAddOn{
+class BV4WP_GravityForms_AddOn extends GFAddOn{
 
 	protected $_version                   = BV4WP_VERSION;
 	protected $_min_gravityforms_version  = '2.0';
@@ -27,11 +27,11 @@ class BV4WP_GravityForms extends GFAddOn{
 
 	/**
 	 * Get an instance of this class.
-	 * @return BV4WP_GravityForms
+	 * @return BV4WP_GravityForms_AddOn
 	 */
 	public static function get_instance() {
 		if ( self::$_instance == null ) {
-			self::$_instance = new BV4WP_GravityForms();
+			self::$_instance = new BV4WP_GravityForms_AddOn();
 		}
 		return self::$_instance;
 	}

@@ -1,12 +1,12 @@
 <?php
 if ( ! defined( 'WPINC' ) ) { die; }
-BV4WP_EDD_Setup::get_instance();
+BV4WP_EDD::get_instance();
 
 /**
- * EDD
+ * Easy Digital Downloads
  * @since 1.0.0
 **/
-class BV4WP_EDD_Setup{
+class BV4WP_EDD{
 
 	/**
 	 * Returns the instance.

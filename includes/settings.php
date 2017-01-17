@@ -35,10 +35,7 @@ class BV4WP_Settings{
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 
 		/* Validate API Key */
-		add_action( 'update_option', array( $this, 'check_api_key' ), 10, 3 );
-
-		/* Settings Scripts */
-		add_action( 'admin_enqueue_scripts', array( $this, 'scripts' ) );
+		add_action( 'update_option_bv4wp_api_key', array( $this, 'check_api_key' ), 10, 3 );
 	}
 
 
@@ -158,8 +155,8 @@ class BV4WP_Settings{
 	 * Check API Key
 	 * @since 1.0.0
 	 */
-	public function check_api_key( $option, $old_value, $new_value ){
-		if( $new_value && $new_value !== $old_value ){
+	public function check_api_key( $old_value, $new_value, $option ){
+		if( !empty( $new_value ) ){
 			$email = get_option( 'admin_email' );
 			$api_key = sanitize_text_field( strip_tags( trim( $new_value ) ) );
 			$validate = bv4wp_validate_email( $email, $api_key );
@@ -187,22 +184,4 @@ class BV4WP_Settings{
 			<?php
 		}
 	}
-
-	/**
-	 * Settings Scripts
-	 * @since 1.0.0
-	 */
-	public function scripts( $hook_suffix ){
-
-		/* Only load in settings page. */
-		if ( $this->hook_suffix == $hook_suffix ){
-
-			/* CSS */
-			wp_enqueue_style( "{$this->settings_slug}_settings", BV4WP_URI . 'assets/settings.css', array(), BV4WP_VERSION );
-
-			/* JS */
-			wp_enqueue_script( "{$this->settings_slug}_settings", BV4WP_URI . 'assets/settings.js', array( 'jquery' ), BV4WP_VERSION, true );
-		}
-	}
 }
-

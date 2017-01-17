@@ -17,7 +17,6 @@ jQuery( document ).ready( function( $ ){
 			},
 			dataType: 'json',
 			success: function( data ){
-				console.log( data );
 				if( false == data.is_valid ){
 					alert( data.message );
 				}

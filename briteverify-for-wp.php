@@ -47,9 +47,6 @@ function bv4wp_plugins_loaded(){
 
 	/* == IMPLEMENTATION == */
 
-	/* WordPress */
-	require_once( BV4WP_PATH . 'includes/briteverify-wordpress.php' );
-
 	/* GravityForms */
 	require_once( BV4WP_PATH . 'includes/briteverify-gravityforms.php' );
 
