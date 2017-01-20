@@ -25,7 +25,7 @@ define( 'BV4WP_VERSION', '1.0.0' );
 ------------------------------------------ */
 
 /* Load plugin in "plugins_loaded" hook */
-add_action( 'plugins_loaded', 'bv4wp_plugins_loaded' );
+add_action( 'plugins_loaded', 'bv4wp_plugins_loaded', 9 );
 
 
 /**

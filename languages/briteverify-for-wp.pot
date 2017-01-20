@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Astoundify Plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-17 14:26+0700\n"
+"POT-Creation-Date: 2017-01-20 10:06+0700\n"
 "PO-Revision-Date: \n"
 "Last-Translator: David Chandra Purnama <david@shellcreeper.com>\n"
 "Language-Team: Astoundify Plugin <adam@astoundify.com>\n"
@@ -34,22 +34,22 @@ msgid "Learn more"
 msgstr ""
 
 #: includes/briteverify-edd.php:119 includes/briteverify-edd.php:182
-#: includes/gravityforms/gravityforms.php:348
-#: includes/gravityforms/gravityforms.php:404
+#: includes/gravityforms/gravityforms.php:350
+#: includes/gravityforms/gravityforms.php:406
 msgid ""
 "Unable to validate email. Email validation request error. Please try again "
 "or contact administrator."
 msgstr ""
 
 #: includes/briteverify-edd.php:122 includes/briteverify-edd.php:186
-#: includes/gravityforms/gravityforms.php:352
-#: includes/gravityforms/gravityforms.php:408
+#: includes/gravityforms/gravityforms.php:354
+#: includes/gravityforms/gravityforms.php:410
 msgid "Email is incorrect."
 msgstr ""
 
 #: includes/briteverify-edd.php:125 includes/briteverify-edd.php:190
-#: includes/gravityforms/gravityforms.php:356
-#: includes/gravityforms/gravityforms.php:412
+#: includes/gravityforms/gravityforms.php:358
+#: includes/gravityforms/gravityforms.php:414
 msgid ""
 "Please use your real email address. You are not allowed to use disposable "
 "email in this form."
@@ -126,33 +126,29 @@ msgstr ""
 msgid "Allow disposable email."
 msgstr ""
 
-#: includes/settings.php:53 includes/settings.php:68
+#: includes/settings.php:47 includes/settings.php:62
 msgid "BriteVerify for WP Settings"
 msgstr ""
 
-#: includes/settings.php:54
+#: includes/settings.php:48
 msgid "BriteVerify"
 msgstr ""
 
-#: includes/settings.php:103
+#: includes/settings.php:97
 msgid "API Key"
 msgstr ""
 
-#: includes/settings.php:112
+#: includes/settings.php:106
 msgid "Supported Plugins"
 msgstr ""
 
-#: includes/settings.php:130
+#: includes/settings.php:119
 msgid ""
 "BriteVerify is an email verification service to make sure each email field "
 "submission is  valid email address. <a href=\"http://www.briteverify.com/\" "
 "target=\"_blank\">Read more about BriteVerify</a>."
 msgstr ""
 
-#: includes/settings.php:144
+#: includes/settings.php:133
 msgid "API Key to connect to BriteVerify Real-Time API."
-msgstr ""
-
-#: includes/settings.php:185
-msgid "Your BriteVerify API Key is not valid."
 msgstr ""

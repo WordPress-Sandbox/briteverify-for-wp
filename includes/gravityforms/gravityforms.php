@@ -263,13 +263,10 @@ class BV4WP_GravityForms_AddOn extends GFAddOn{
 	public function bv4wp_gf_enqueue_scripts( $form = '', $is_ajax = false ) {
 
 		/* Global var to store all input fields */
-		global $bv4wp_gf_email_fields, $bv4gf_localize_load;
+		global $bv4wp_gf_email_fields, $bv4gf_script_load;
 		if( !isset( $bv4wp_gf_email_fields ) ){
 			$bv4wp_gf_email_fields = array();
 		}
-
-		/* Load Scripts */
-		wp_enqueue_script( 'bv4wp-gf', BV4WP_URI . 'assets/gravityforms.js', array( 'jquery' ), BV4WP_VERSION, true );
 
 		/* Add input */
 		if( isset( $form['fields'] ) && $form['fields'] && is_array( $form['fields'] ) ){
@@ -298,18 +295,23 @@ class BV4WP_GravityForms_AddOn extends GFAddOn{
 					$input_id = esc_attr( 'input_' . $field['formId'] . '_' . $field['id'] );
 
 					/* Add data */
-					if( !isset( $bv4wp_gf_email_fields[$input_id] ) ){
+					if( !isset( $bv4wp_gf_email_fields[$input_id] ) && $validate ){
 						$bv4wp_gf_email_fields[$input_id] = array(
-							'enable'           => esc_attr( $validate ),
-							'allow_disposable' => esc_attr( $allow_dp ),
+							'enable'           => $validate,
+							'allow_disposable' => $allow_dp,
 						);
 					}
 				}
 			}
 		}
 		/* Do not load twice (?) */
-		if( ! isset( $bv4gf_localize_load ) && ! $bv4gf_localize_load ){
-			$bv4gf_localize_load = true;
+		if( ! isset( $bv4gf_script_load ) && ! $bv4gf_script_load && $bv4wp_gf_email_fields ){
+			$bv4gf_script_load = true;
+
+			/* Load Scripts */
+			wp_enqueue_script( 'bv4wp-gf', BV4WP_URI . 'assets/gravityforms.js', array( 'jquery' ), BV4WP_VERSION, true );
+
+			/* Localize Load */
 			wp_localize_script( 'bv4wp-gf', 'bv4wp_gf_emails', $bv4wp_gf_email_fields );
 			wp_localize_script( 'bv4wp-gf', 'bv4wp_gf_ajax', array( 'url' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'bv4wp_gf_ajax' ) ) );
 		}
