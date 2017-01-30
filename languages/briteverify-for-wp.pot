@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Astoundify Plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-20 10:06+0700\n"
+"POT-Creation-Date: 2017-01-30 09:34+0700\n"
 "PO-Revision-Date: \n"
 "Last-Translator: David Chandra Purnama <david@shellcreeper.com>\n"
 "Language-Team: Astoundify Plugin <adam@astoundify.com>\n"
@@ -17,39 +17,33 @@ msgstr ""
 "X-Generator: Poedit 1.8.11\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: includes/briteverify-edd.php:68
+#: includes/briteverify-edd.php:59
 msgid "Easy Digital Downloads"
 msgstr ""
 
-#: includes/briteverify-edd.php:101
+#: includes/briteverify-edd.php:92
 msgid "Enable in EDD registration form."
 msgstr ""
 
-#: includes/briteverify-edd.php:107
+#: includes/briteverify-edd.php:98
 msgid "The easiest way to sell digital products with WordPress."
 msgstr ""
 
-#: includes/briteverify-edd.php:107 includes/briteverify-gravityforms.php:62
+#: includes/briteverify-edd.php:98 includes/briteverify-gravityforms.php:62
 msgid "Learn more"
 msgstr ""
 
-#: includes/briteverify-edd.php:119 includes/briteverify-edd.php:182
-#: includes/gravityforms/gravityforms.php:350
-#: includes/gravityforms/gravityforms.php:406
+#: includes/briteverify-edd.php:110 includes/gravityforms/gravityforms.php:290
 msgid ""
 "Unable to validate email. Email validation request error. Please try again "
 "or contact administrator."
 msgstr ""
 
-#: includes/briteverify-edd.php:122 includes/briteverify-edd.php:186
-#: includes/gravityforms/gravityforms.php:354
-#: includes/gravityforms/gravityforms.php:410
+#: includes/briteverify-edd.php:113 includes/gravityforms/gravityforms.php:294
 msgid "Email is incorrect."
 msgstr ""
 
-#: includes/briteverify-edd.php:125 includes/briteverify-edd.php:190
-#: includes/gravityforms/gravityforms.php:358
-#: includes/gravityforms/gravityforms.php:414
+#: includes/briteverify-edd.php:116 includes/gravityforms/gravityforms.php:298
 msgid ""
 "Please use your real email address. You are not allowed to use disposable "
 "email in this form."
@@ -68,61 +62,61 @@ msgid ""
 "Easily create web forms and manage form entries within the WordPress admin."
 msgstr ""
 
-#: includes/gravityforms/gravityforms.php:81
+#: includes/gravityforms/gravityforms.php:74
 msgid "BriteVerify: Enable Verification"
 msgstr ""
 
-#: includes/gravityforms/gravityforms.php:86
-#: includes/gravityforms/gravityforms.php:110
+#: includes/gravityforms/gravityforms.php:79
+#: includes/gravityforms/gravityforms.php:103
 #, php-format
 msgid "Default (%s)"
 msgstr ""
 
-#: includes/gravityforms/gravityforms.php:86
+#: includes/gravityforms/gravityforms.php:79
 msgid "Enabled"
 msgstr ""
 
-#: includes/gravityforms/gravityforms.php:86
+#: includes/gravityforms/gravityforms.php:79
 msgid "Disabled"
 msgstr ""
 
-#: includes/gravityforms/gravityforms.php:92
+#: includes/gravityforms/gravityforms.php:85
 msgid "Enable"
 msgstr ""
 
-#: includes/gravityforms/gravityforms.php:98
+#: includes/gravityforms/gravityforms.php:91
 msgid "Disable"
 msgstr ""
 
-#: includes/gravityforms/gravityforms.php:105
+#: includes/gravityforms/gravityforms.php:98
 msgid "BriteVerify: Allow Disposable Email"
 msgstr ""
 
-#: includes/gravityforms/gravityforms.php:110
-#: includes/gravityforms/gravityforms.php:116
+#: includes/gravityforms/gravityforms.php:103
+#: includes/gravityforms/gravityforms.php:109
 msgid "Allow"
 msgstr ""
 
-#: includes/gravityforms/gravityforms.php:110
-#: includes/gravityforms/gravityforms.php:122
+#: includes/gravityforms/gravityforms.php:103
+#: includes/gravityforms/gravityforms.php:115
 msgid "Do Not Allow"
 msgstr ""
 
-#: includes/gravityforms/gravityforms.php:231
+#: includes/gravityforms/gravityforms.php:224
 msgid ""
 "This is the default option. You can still disable/enable each feature in "
 "email field using advanced field settings."
 msgstr ""
 
-#: includes/gravityforms/gravityforms.php:232
+#: includes/gravityforms/gravityforms.php:225
 msgid "Default options"
 msgstr ""
 
-#: includes/gravityforms/gravityforms.php:239
+#: includes/gravityforms/gravityforms.php:232
 msgid "Enable in all email fields."
 msgstr ""
 
-#: includes/gravityforms/gravityforms.php:244
+#: includes/gravityforms/gravityforms.php:237
 msgid "Allow disposable email."
 msgstr ""
 

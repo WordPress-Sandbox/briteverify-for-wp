@@ -57,13 +57,6 @@ class BV4WP_GravityForms_AddOn extends GFAddOn{
 
 			/* Validation */
 			add_filter( 'gform_field_validation', array( $this, 'bv4wp_gf_email_validation' ), 10, 4 );
-
-			/* Scripts */
-			add_action( 'gform_enqueue_scripts', array( $this, 'bv4wp_gf_enqueue_scripts' ), 10, 2 );
-
-			/* Ajax Validation */
-			add_action( 'wp_ajax_bv4wp_gf_validate_email', array( $this, 'bv4wp_gf_ajax_validate_email' ) );
-			add_action( 'wp_ajax_nopriv_bv4wp_gf_validate_email', array( $this, 'bv4wp_gf_ajax_validate_email' ) );
 		}
 
 		parent::init();
@@ -250,115 +243,6 @@ class BV4WP_GravityForms_AddOn extends GFAddOn{
 			),
 		);
 		return $fields;
-	}
-
-
-	/* FRONT END
-	------------------------------------------ */
-
-	/**
-	 * Return the scripts which should be enqueued.
-	 * @return array
-	 */
-	public function bv4wp_gf_enqueue_scripts( $form = '', $is_ajax = false ) {
-
-		/* Global var to store all input fields */
-		global $bv4wp_gf_email_fields, $bv4gf_script_load;
-		if( !isset( $bv4wp_gf_email_fields ) ){
-			$bv4wp_gf_email_fields = array();
-		}
-
-		/* Add input */
-		if( isset( $form['fields'] ) && $form['fields'] && is_array( $form['fields'] ) ){
-			foreach( $form['fields'] as $field ){
-				if( 'email' == $field['type'] ){
-
-					/* Allow Disposable Email Option */
-					$allow_dp = bv4wp_gf_option_allow_disposable();
-					if( 'yes' == $field['bv4wp_gf_allow_disposable'] ){
-						$allow_dp = true;
-					}
-					elseif( 'no' == $field['bv4wp_gf_allow_disposable'] ){
-						$allow_dp = false;
-					}
-
-					/* Check if validation enabled */
-					$validate = bv4wp_gf_option_enable();
-					if( 'yes' == $field['bv4wp_gf_enable'] ){
-						$validate = true;
-					}
-					elseif( 'no' == $field['bv4wp_gf_enable'] ){
-						$validate = false;
-					}
-
-					/* Input ID */
-					$input_id = esc_attr( 'input_' . $field['formId'] . '_' . $field['id'] );
-
-					/* Add data */
-					if( !isset( $bv4wp_gf_email_fields[$input_id] ) && $validate ){
-						$bv4wp_gf_email_fields[$input_id] = array(
-							'enable'           => $validate,
-							'allow_disposable' => $allow_dp,
-						);
-					}
-				}
-			}
-		}
-		/* Do not load twice (?) */
-		if( ! isset( $bv4gf_script_load ) && ! $bv4gf_script_load && $bv4wp_gf_email_fields ){
-			$bv4gf_script_load = true;
-
-			/* Load Scripts */
-			wp_enqueue_script( 'bv4wp-gf', BV4WP_URI . 'assets/gravityforms.js', array( 'jquery' ), BV4WP_VERSION, true );
-
-			/* Localize Load */
-			wp_localize_script( 'bv4wp-gf', 'bv4wp_gf_emails', $bv4wp_gf_email_fields );
-			wp_localize_script( 'bv4wp-gf', 'bv4wp_gf_ajax', array( 'url' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'bv4wp_gf_ajax' ) ) );
-		}
-	}
-
-
-	/* AJAX CALLBACK
-	------------------------------------------ */
-
-	/**
-	 * Validate Emails
-	 * @since 1.0.0
-	 */
-	public function bv4wp_gf_ajax_validate_email(){
-
-		/* Strip Slash */
-		$request = stripslashes_deep( $_POST );
-
-		/* Check Ajax Nonce */
-		check_ajax_referer( 'bv4wp_gf_ajax', 'nonce' );
-
-		/* Vars */
-		$email = isset( $request['email'] ) ? $request['email'] : '';
-		$allow_disposable = isset( $request['allow_disposable'] ) && $request['allow_disposable'] ? true : false;
-
-		/* Validate email using BriteVerify */
-		$valid_status = bv4wp_validate_email( $email );
-
-		/* Return result messages based on status */
-		$result = array(
-			'is_valid' => true,
-			'message'  => '',
-		);
-		if( 'error' == $valid_status ){
-			$result['is_valid'] = false;
-			$result['message'] = __( 'Unable to validate email. Email validation request error. Please try again or contact administrator.', 'briteverify-for-wp' );
-		}
-		elseif( 'invalid' == $valid_status ){
-			$result['is_valid'] = false;
-			$result['message'] = __( 'Email is incorrect.', 'briteverify-for-wp' );
-		}
-		elseif( 'disposable' == $valid_status && ! $allow_dp ){
-			$result['is_valid'] = false;
-			$result['message'] = __( 'Please use your real email address. You are not allowed to use disposable email in this form.', 'briteverify-for-wp' );
-		}
-		echo json_encode( $result );
-		wp_die();
 	}
 
 
