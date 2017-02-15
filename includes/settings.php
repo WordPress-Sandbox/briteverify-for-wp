@@ -26,7 +26,6 @@ class BV4WP_Settings{
 		$this->settings_slug = 'bv4wp';
 		$this->hook_suffix   = 'settings_page_bv4wp';
 		$this->options_group = 'bv4wp';
-		$this->option_name   = 'bv4wp_api_key';
 
 		/* Create Settings Page */
 		add_action( 'admin_menu', array( $this, 'create_settings_page' ) );
@@ -79,8 +78,13 @@ class BV4WP_Settings{
 		/* Register settings */
 		register_setting(
 			$option_group      = $this->options_group,
-			$option_name       = $this->option_name,
-			$sanitize_callback = array( $this, 'sanitize' )
+			$option_name       = 'bv4wp_api_key',
+			$sanitize_callback = array( $this, 'sanitize_api_key' )
+		);
+		register_setting(
+			$option_group      = $this->options_group,
+			$option_name       = 'bv4wp_method',
+			$sanitize_callback = array( $this, 'sanitize_method' )
 		);
 
 		/* Create settings section */
@@ -91,7 +95,7 @@ class BV4WP_Settings{
 			$settings_slug     = $this->settings_slug
 		);
 
-		/* Create Setting Field: Boxes, Buttons, Columns */
+		/* Create Setting Field: API Key */
 		add_settings_field(
 			$field_id          = 'bv4wp_field_api_key',
 			$field_title       = '<label for="bv4wp_api_key">' . __( 'API Key', 'briteverify-for-wp' ) . '</label>',
@@ -100,7 +104,16 @@ class BV4WP_Settings{
 			$section_id        = 'bv4wp_section_api'
 		);
 
-		/* Create settings section */
+		/* Create Setting Field: Method */
+		add_settings_field(
+			$field_id          = 'bv4wp_field_method',
+			$field_title       = '<label for="bv4wp_method">' . __( 'Validation Method', 'briteverify-for-wp' ) . '</label>',
+			$callback_function = array( $this, 'settings_field_method' ),
+			$settings_slug     = $this->settings_slug,
+			$section_id        = 'bv4wp_section_api'
+		);
+
+		/* Create settings section: Plugins Support */
 		add_settings_section(
 			$section_id        = 'bv4wp_section_plugins',
 			$section_title     = __( 'Supported Plugins', 'briteverify-for-wp' ),
@@ -127,20 +140,43 @@ class BV4WP_Settings{
 	public function settings_field_api_key(){
 		?>
 		<p>
-			<input id="bv4wp_api_key" type="text" name="bv4wp_api_key" class="regular-text" value="<?php echo sanitize_text_field( strip_tags( trim( get_option( $this->option_name ) ) ) ); ?>">
+			<input id="bv4wp_api_key" type="text" name="bv4wp_api_key" class="regular-text" value="<?php echo sanitize_text_field( strip_tags( trim( get_option( 'bv4wp_api_key' ) ) ) ); ?>">
 		</p>
 		<p class="description">
-			<?php _e( 'API Key to connect to BriteVerify Real-Time API.', 'fx-base' ); ?>
+			<?php _e( 'API Key to connect to BriteVerify Real-Time API.', 'briteverify-for-wp' ); ?>
 		</p>
 		<?php
 	}
 
 	/**
-	 * Sanitize Options
+	 * Settings Field: Method
 	 * @since 1.0.0
 	 */
-	public function sanitize( $data ){
+	public function settings_field_method(){
+		$option = get_option( 'bv4wp_method' );
+		?>
+		<p>
+			<label><input type="radio" name="bv4wp_method" value="" <?php checked( '', $option ); ?>> <?php _e( 'Default (only reject if email is invalid).', 'briteverify-for-wp' ); ?></label>
+			<br/>
+			<label><input type="radio" name="bv4wp_method" value="strict" <?php checked( 'strict', $option ); ?>> <?php _e( 'Strict (only allow if email is valid).', 'briteverify-for-wp' ); ?></label>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Sanitize Api Key Options
+	 * @since 1.0.0
+	 */
+	public function sanitize_api_key( $data ){
 		return sanitize_text_field( strip_tags( trim( $data ) ) );
+	}
+
+	/**
+	 * Sanitize Method Options
+	 * @since 1.0.0
+	 */
+	public function sanitize_method( $data ){
+		return 'strict' == $data ? 'strict' : '';
 	}
 
 }

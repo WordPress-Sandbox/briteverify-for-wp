@@ -13,6 +13,15 @@ function bv4wp_api_key(){
 	return $key ? $key : false;
 }
 
+/**
+ * Get validation method: Strict/Default.
+ * Return null if default.
+ * @since 1.0.0
+ */
+function bv4wp_method(){
+	return 'strict' == get_option( 'bv4wp_method' ) ? 'strict' : '';
+}
+
 
 /**
  * Validate Email
@@ -53,17 +62,38 @@ function bv4wp_validate_email( $email, $api_key = '' ){
 	$data = json_decode( trim( wp_remote_retrieve_body( $raw_response ) ), true );
 
 	/* Status */
-	return $data['status'];
 	if( isset( $data['status'] ) ){
-		if( 'valid' == $data['status'] ){
-			if( isset( $data['disposable'] ) && true == $data['disposable'] ){
-				return 'disposable';
+
+		/* Validation Method: Strict */
+		if( 'strict' == bv4wp_method() ){
+
+			/* Only set to valid if email is explicit valid */
+			if( 'valid' == $data['status'] ){
+				if( isset( $data['disposable'] ) && true == $data['disposable'] ){
+					return 'disposable';
+				}
+				return 'valid';
 			}
-			return 'valid';
+			else{
+				return 'invalid';
+			}
 		}
+
+		/* Validation Method: Default (loose) */
 		else{
-			return 'invalid';
+
+			/* Set to valid if it's not invalid */
+			if( 'invalid' !== $data['status'] ){
+				if( isset( $data['disposable'] ) && true == $data['disposable'] ){
+					return 'disposable';
+				}
+				return 'valid';
+			}
+			else{
+				return 'invalid';
+			}
 		}
+
 	}
 	else{
 		return 'error';

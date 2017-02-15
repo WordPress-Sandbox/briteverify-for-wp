@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Astoundify Plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-30 09:34+0700\n"
+"POT-Creation-Date: 2017-02-15 20:00+0700\n"
 "PO-Revision-Date: \n"
 "Last-Translator: David Chandra Purnama <david@shellcreeper.com>\n"
 "Language-Team: Astoundify Plugin <adam@astoundify.com>\n"
@@ -120,29 +120,41 @@ msgstr ""
 msgid "Allow disposable email."
 msgstr ""
 
-#: includes/settings.php:47 includes/settings.php:62
+#: includes/settings.php:46 includes/settings.php:61
 msgid "BriteVerify for WP Settings"
 msgstr ""
 
-#: includes/settings.php:48
+#: includes/settings.php:47
 msgid "BriteVerify"
 msgstr ""
 
-#: includes/settings.php:97
+#: includes/settings.php:101
 msgid "API Key"
 msgstr ""
 
-#: includes/settings.php:106
-msgid "Supported Plugins"
+#: includes/settings.php:110
+msgid "Validation Method"
 msgstr ""
 
 #: includes/settings.php:119
+msgid "Supported Plugins"
+msgstr ""
+
+#: includes/settings.php:132
 msgid ""
 "BriteVerify is an email verification service to make sure each email field "
 "submission is  valid email address. <a href=\"http://www.briteverify.com/\" "
 "target=\"_blank\">Read more about BriteVerify</a>."
 msgstr ""
 
-#: includes/settings.php:133
+#: includes/settings.php:146
 msgid "API Key to connect to BriteVerify Real-Time API."
+msgstr ""
+
+#: includes/settings.php:159
+msgid "Default (only reject if email is invalid)."
+msgstr ""
+
+#: includes/settings.php:161
+msgid "Strict (only allow if email is valid)."
 msgstr ""
