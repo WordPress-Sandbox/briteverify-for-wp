@@ -55,7 +55,15 @@ function bv4wp_validate_email( $email, $api_key = '' ){
 
 	/* Request to BriteVerify fail */
 	if ( is_wp_error( $raw_response ) || 200 != wp_remote_retrieve_response_code( $raw_response ) ) {
-		return 'error';
+
+		/* Strict Method: Reject */
+		if( 'strict' == bv4wp_method() ){
+			return 'error';
+		}
+		/* Loose Method: Accept email as valid. */
+		else{
+			return 'valid';
+		}
 	}
 
 	/* JSON Data Result */
@@ -95,7 +103,16 @@ function bv4wp_validate_email( $email, $api_key = '' ){
 		}
 
 	}
+	/* No Status Returned, Result is not expected */
 	else{
-		return 'error';
+
+		/* Strict Method: Reject */
+		if( 'strict' == bv4wp_method() ){
+			return 'error';
+		}
+		/* Loose Method: Accept email as valid. */
+		else{
+			return 'valid';
+		}
 	}
 }
