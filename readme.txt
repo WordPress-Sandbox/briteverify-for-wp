@@ -4,7 +4,7 @@ Donate link: https://www.paypal.me/astoundify
 Tags: gravityforms,briteverify,spam,disposable-email
 Requires at least: 4.4
 Tested up to: 4.7
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,10 @@ Currently No.
 3. Gravity Forms Email Field Advanced Settings
 
 == Changelog ==
+
+= 1.1.0 - 15 Feb 2017 =
+* Remove BriteVerify AJAX Checking.
+* Add validation method option.
 
 = 1.0.0 - 20 Jan 2017 =
 * Initial release.
